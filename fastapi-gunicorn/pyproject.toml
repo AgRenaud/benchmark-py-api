@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "fastapi-gunicorn"
+version = "0.1.0"
+description = ""
+authors = ["AgRenaud <renaud.aguirrechambilla@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fastapi_gunicorn"}]
+
+[tool.poetry.dependencies]
+python = "3.10.4"
+gunicorn = "^20.1.0"
+uvicorn = "^0.18.3"
+fastapi = "^0.85.0"
+veterinary-clinic = { path = "../veterinary-clinic", develop = true }
+uuid = "^1.30"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
