@@ -29,14 +29,11 @@ def add_appointment(appointment: schema.Appointment, service: VeterinaryClinic=D
     with service.uow as uow:
         pet = uow.pets.get(appointment.pet_id)
     
-    new_appointment = Appointment(uid, pet, appointment.datetime)
+    new_appointment = Appointment(uid, pet, appointment.type.value, appointment.datetime)
     service.add_pet(new_appointment)
     return {"msg": f"You're appointment for {new_appointment.date} has been added to the database with id: {uid}"}
 
 
 @router.get('/appointments/report')
-def add_pet(pet: schema.Pet, service: VeterinaryClinic=Depends(clinic_service)):
-    uid = create_uid()
-    new_pet = Pet(uid, pet.name, pet.type)
-    service.add_pet(new_pet)
-    return {"msg": f"You're pet has been added to the database with id: {uid}"}
+def download_report(report_id: str, service: VeterinaryClinic=Depends(clinic_service)):
+    return service.get_report(report_id)

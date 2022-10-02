@@ -13,8 +13,8 @@ class Pet(BaseModel):
     name: str
 
 class AppointmentType(Enum):
-    CHECK_UP = "check_up"
-    OPERATION = "operation"
+    check_up = "check_up"
+    operation = "operation"
 
 class Appointment(BaseModel):
     pet_id: str
