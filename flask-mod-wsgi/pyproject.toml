@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "flask-mod-wsgi"
+version = "0.1.0"
+description = ""
+authors = ["AgRenaud <renaud.aguirrechambilla@gmail.com>"]
+readme = "README.md"
+packages = [{include = "flask_mod_wsgi"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
