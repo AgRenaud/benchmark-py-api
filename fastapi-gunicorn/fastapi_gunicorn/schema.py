@@ -17,6 +17,5 @@ class AppointmentType(Enum):
     operation = "operation"
 
 class Appointment(BaseModel):
-    pet_id: str
     type : AppointmentType
     datetime: datetime
