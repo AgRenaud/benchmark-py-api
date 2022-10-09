@@ -1,19 +1,15 @@
 [Unit]
-Description=gunicorn daemon
-Requires=gunicorn.socket
+Description=Veterynary clinic application serve by Fastapi and Gunicorn 
+Requires=fastapi.gunicorn.socket
 After=network.target
 
 [Service]
 Type=notify
-# the specific user that our service will run as
-User=someuser
-Group=someuser
-# another option for an even more restricted service is
-# DynamicUser=yes
-# see http://0pointer.net/blog/dynamic-users-with-systemd.html
+User=www-data
+Group=www-data
 RuntimeDirectory=gunicorn
-WorkingDirectory=/home/someuser/applicationroot
-ExecStart=/usr/bin/gunicorn applicationname.wsgi
+WorkingDirectory=/opt/src/fastapi-gunicorn/
+ExecStart=/opt/gunicorn applicationname.wsgi
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5
