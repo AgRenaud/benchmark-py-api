@@ -39,3 +39,4 @@ install_poetry() {
 
 install_deps
 install_pyenv
+install_poetry
