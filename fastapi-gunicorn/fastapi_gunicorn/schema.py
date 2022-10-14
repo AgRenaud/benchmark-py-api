@@ -4,8 +4,8 @@ from datetime import datetime
 
 
 class PetType(str, Enum):
-    Dog = "Dog"
-    Cat = "Cat"
+    DOG = "DOG"
+    CAT = "CAT"
 
 
 class Pet(BaseModel):
@@ -13,8 +13,8 @@ class Pet(BaseModel):
     name: str
 
 class AppointmentType(Enum):
-    check_up = "check_up"
-    operation = "operation"
+    CHECK_UP = "CHECK_UP"
+    OPERATION = "OPERATION"
 
 class Appointment(BaseModel):
     type : AppointmentType

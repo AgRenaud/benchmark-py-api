@@ -27,10 +27,8 @@ def add_appointment(appointment: schema.Appointment, pet_id: str, service: Veter
     uid = create_uid()
 
     with service.uow as uow:
-        pet = uow.pets.get(pet_id)
-    
-        new_appointment = Appointment(uid, pet, appointment.type.value, appointment.datetime)
-        service.add_appointment(new_appointment)
+        new_appointment = Appointment(uid, appointment.type.value, appointment.datetime)
+        service.add_appointment(pet_id, new_appointment)
     return {"msg": f"You're appointment for {new_appointment.date} has been added to the database with id: {uid}"}
 
 

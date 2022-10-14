@@ -12,7 +12,7 @@ class UnitOfWork:
 
     def __enter__(self):
         self.session: Session = self.session_factory()
-        return self.session()
+        return self.session
 
     def __exit__(self, exn_type, exn_value, traceback):
         if exn_type is None:
@@ -47,15 +47,19 @@ class VeterinaryClinic:
 
     def add_appointment(self, pet_id, appointment: models.Appointment) -> dict:
         with self.uow:
-            self.uow.session.get()
+            pet: models.Pet | None = self.uow.session.get(models.Pet, pet_id)
+            if not pet:
+                raise ValueError("Pet not found")
+            pet.add_appointment(appointment)
 
-    def get_report(self, appointment_id: str) -> dict:
+    def get_report(self, appointment_id: str) -> str:
         
         with self.uow:
-            appointment = self.uow.appointments.get(appointment_id)
+            appointment: models.Appointment | None = self.uow.session.get(models.Appointment, appointment_id)
             
             if appointment is None:
                 raise ValueError("Appointment not found")
                 
-            return appointment.generate_report()
+            report = appointment.generate_report()
 
+        return report

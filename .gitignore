@@ -2,3 +2,5 @@
 .vagrant
 *.sqlite3
 __pycache__
+.bash_history
+.cache/

@@ -7,13 +7,13 @@ from dataclasses import dataclass, field
 
 
 class PetType(Enum):
-    Cat = "Cat"
-    Dog = "Dog"
+    CAT = "CAT"
+    DOG = "DOG"
 
 
 class AppointmentType(Enum):
-    CHECK_UP = "check_up"
-    OPERATION = "operation"
+    CHECK_UP = "CHECK_UP"
+    OPERATION = "OPERATION"
 
 @dataclass
 class Appointment:
@@ -30,6 +30,9 @@ class Appointment:
                 time.sleep(3)
                 return "The operation has succefully ended."
 
+    def __hash__(self) -> int:
+        return hash((self.id))
+
 
 @dataclass
 class Pet:
@@ -41,7 +44,7 @@ class Pet:
     def add_appointment(self, appointment: Appointment):
         self.appointments.add(appointment)
 
-    def get_report(self, appointment_id: str):
+    def get_report(self, appointment_id: str) -> str:
 
         appointment = next((a for a in iter(self.appointments) if a.id==appointment_id), None)
 

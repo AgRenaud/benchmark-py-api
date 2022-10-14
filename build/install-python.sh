@@ -14,5 +14,11 @@ install_poetry() {
     curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_HOME python3 -
 }
 
+<<<<<<< HEAD
 install_pyenv
 install_poetry
+=======
+install_deps
+install_pyenv
+install_poetry
+>>>>>>> 31ae580f27a3fa7ac00a4aa014f23d30a0521318

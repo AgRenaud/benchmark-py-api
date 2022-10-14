@@ -4,15 +4,15 @@ from sqlalchemy import (
     ForeignKey,
     Table,
     Column,
-    Integer,
     DateTime,
     Enum,
     Text,
     create_engine,
 )
-from sqlalchemy.orm import registry
+from sqlalchemy.orm import registry, relationship
 
 from veterinary_clinic.models import PetType, Pet, AppointmentType, Appointment
+
 
 def start_mappers(mapper_registry: registry):
     pets = Table(
@@ -36,8 +36,8 @@ def start_mappers(mapper_registry: registry):
         Column("created_at", DateTime, default=datetime.datetime.now),
     )
 
-    mapper_registry.map_imperatively(Pet, pets)
-    mapper_registry.map_imperatively(Appointment, appointments)
+    appointments_mapper = mapper_registry.map_imperatively(Appointment, appointments)
+    pets_mapper = mapper_registry.map_imperatively(Pet, pets, properties={"appointments": relationship(appointments_mapper, collection_class=set)})
 
 def set_up_db(uri: str, mapper_registry: registry) -> None:
     engine = create_engine(uri)
