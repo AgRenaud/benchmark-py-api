@@ -9,9 +9,7 @@ install_pyenv() {
 }
 
 install_poetry() {
-    POETRY_HOME="/etc/poetry"
-    
-    curl -sSL https://install.python-poetry.org | POETRY_HOME=$POETRY_HOME python3 -
+    curl -sSL https://install.python-poetry.org | python3 -
 }
 
 install_pyenv
