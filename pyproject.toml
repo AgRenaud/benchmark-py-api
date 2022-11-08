@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 locust = "^2.12.1"
 Faker = "^14.2.1"
+ansible = "^6.5.0"
 
 
 [build-system]

@@ -1,0 +1,24 @@
+---
+- hosts: all
+  remote_user: root
+
+  tasks:
+  - name: Add the user 'bench' with a specific uid and a primary group of 'admin'
+    ansible.builtin.user:
+      name: bench
+      comment: Bench user to run benchmark
+      group: admin
+  - name: Install pyenv
+    tasks:
+      - name: Clone repo
+        git:
+          repo: https://github.com/pyenv/pyenv.git
+          dest: "/home/bench/.pyenv"
+      - name: Compile project
+        shell: >
+          cd ~/.pyenv && src/configure && make -C src  
+
+  - name: install Poetry
+    shell: >
+      set -o pipefail &&
+      curl -sSL https://install.python-poetry.org | python3 -

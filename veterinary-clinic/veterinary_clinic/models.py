@@ -24,10 +24,8 @@ class Appointment:
     def generate_report(self) -> str:
         match self.type:
             case AppointmentType.CHECK_UP:
-                time.sleep(1)
                 return "You're pet is not ill !"
             case AppointmentType.OPERATION:
-                time.sleep(3)
                 return "The operation has succefully ended."
 
     def __hash__(self) -> int:
