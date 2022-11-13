@@ -1,24 +1,46 @@
 ---
 - hosts: all
-  remote_user: root
+  become: yes
+  become_method: sudo
+  remote_user: bench
 
   tasks:
-  - name: Add the user 'bench' with a specific uid and a primary group of 'admin'
+  
+  - name: Add the group 'bench'
+    ansible.builtin.group:
+      name: bench
+      state: present
+  
+  - name: Add the user 'bench' with admin permissions
     ansible.builtin.user:
       name: bench
       comment: Bench user to run benchmark
-      group: admin
-  - name: Install pyenv
-    tasks:
-      - name: Clone repo
-        git:
-          repo: https://github.com/pyenv/pyenv.git
-          dest: "/home/bench/.pyenv"
-      - name: Compile project
-        shell: >
-          cd ~/.pyenv && src/configure && make -C src  
+      group: bench
+
+  - name: Clone repo
+    git:
+      repo: https://github.com/pyenv/pyenv.git
+      dest: "/home/bench/.pyenv"
+
+  - name: Add path etc to .bashrc.
+    lineinfile:
+      dest: "/home/bench/.bashrc"
+      state: present
+      create: yes
+      line: "{{ item }}"
+    with_items:
+      - 'export PYENV_ROOT="$HOME/.pyenv"'
+      - 'export PATH="$PYENV_ROOT/bin:$PATH"'
+      - 'eval "$(pyenv init -)"'
+      - 'eval "$(pyenv virtualenv-init -)"'
+
+  - name: Ensure .pyenv permissions are set properly
+    file: path=/home/bench/.pyenv
+          recurse=yes
+          owner=bench
+          group=bench
+          state=directory
 
   - name: install Poetry
     shell: >
-      set -o pipefail &&
       curl -sSL https://install.python-poetry.org | python3 -
