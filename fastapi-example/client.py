@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from fastapi_gunicorn.router import router 
+from fastapi_example.router import router 
 
 
 def create_application() -> FastAPI:

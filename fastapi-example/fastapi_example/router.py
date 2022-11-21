@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends
 from veterinary_clinic.service import VeterinaryClinic
 from veterinary_clinic.models import Appointment, Pet
 
-from fastapi_gunicorn import schema
-from fastapi_gunicorn.dependencies import clinic_service
+from fastapi_example import schema
+from fastapi_example.dependencies import clinic_service
 
 router = APIRouter()
 
