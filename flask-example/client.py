@@ -5,7 +5,9 @@ from flask_example.blueprint import ClinicController
 
 def create_application() -> Flask:
 
-    app = Flask()
-    app.add_url_rule('clinic', '/', ClinicController())
+    clinic = ClinicController()
+
+    app = Flask(__name__)
+    app.register_blueprint(clinic.blueprint)
 
     return app

@@ -16,13 +16,18 @@ def create_uid() -> str:
 
 class  ClinicController:
 
-    blueprint = Blueprint("clinic")
+    blueprint = Blueprint("ClinicController", __name__)
 
     def __init__(self, service: VeterinaryClinic=clinic_service()) -> None:
         self.service = service
+        self.__init_enpoints__()
+
+    def __init_enpoints__(self):
+        self.blueprint.add_url_rule('/pets/', 'pets', self.add_pet, methods=['POST'])
+        self.blueprint.add_url_rule('/pets/<pet_id>/appointments', 'appointments', self.add_appointment, methods=['POST'])
+        self.blueprint.add_url_rule('/pets/<pet_id>/appointments/<appointment_id>/report', 'report', self.download_report, methods=['GET'])
 
 
-    @blueprint.post('/pets/')
     def add_pet(self):
         request_data = request.json
         pet = schema.validate_schema(schema.Pet, request_data)
@@ -32,8 +37,6 @@ class  ClinicController:
         self.service.add_pet(new_pet)
         return {"msg": f"You're pet has been added to the database with id: {uid}"}
 
-
-    @blueprint.post('/pets/<pet_id>/appointments/')
     def add_appointment(self, pet_id: str):
         request_data = request.json
         appointment = schema.validate_schema(schema.Appointment, request_data)
@@ -44,7 +47,5 @@ class  ClinicController:
             self.service.add_appointment(pet_id, new_appointment)
         return {"msg": f"You're appointment for {new_appointment.date} has been added to the database with id: {uid}"}
 
-
-    @blueprint.get('/pets/<pet_id>/appointments/<appointment_id>/report')
     def download_report(self, appointment_id: str):
         return self.service.get_report(appointment_id)
