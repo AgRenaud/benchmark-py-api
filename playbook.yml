@@ -15,24 +15,71 @@
     ansible.builtin.user:
       name: bench
       comment: Bench user to run benchmark
+      password: "{{ 'bench' | password_hash('sha512','A512') }}"
+      shell: /bin/bash
       group: bench
+
+  - name: Update and upgrade apt packages
+    become: true
+    ansible.builtin.apt:
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400
+
+  - name: Install Apache2
+    become: true
+    ansible.builtin.apt:
+      name: apache2 
+      state: latest
+  
+  - name: Install nginx
+    become: true
+    ansible.builtin.apt:
+      name: nginx
+      state: latest 
+
+  - name: Install pyenv deps
+    become: true
+    ansible.builtin.apt:
+      pkg: 
+        - make
+        - acl
+        - build-essential
+        - libssl-dev
+        - zlib1g-dev
+        - libbz2-dev
+        - libreadline-dev
+        - libsqlite3-dev
+        - wget
+        - curl
+        - llvm
+        - libncurses5-dev
+        - xz-utils
+        - tk-dev
+        - libffi-dev
+        - liblzma-dev
+        - python-openssl
+        - git
+      state: latest
 
   - name: Clone repo
     git:
       repo: https://github.com/pyenv/pyenv.git
       dest: "/home/bench/.pyenv"
+      version: master
+      update: yes
+      force: yes
 
   - name: Add path etc to .bashrc.
     lineinfile:
       dest: "/home/bench/.bashrc"
       state: present
       create: yes
-      line: "{{ item }}"
+      line: "{{ item }}"     
     with_items:
       - 'export PYENV_ROOT="$HOME/.pyenv"'
       - 'export PATH="$PYENV_ROOT/bin:$PATH"'
       - 'eval "$(pyenv init -)"'
-      - 'eval "$(pyenv virtualenv-init -)"'
 
   - name: Ensure .pyenv permissions are set properly
     file: path=/home/bench/.pyenv
@@ -41,6 +88,8 @@
           group=bench
           state=directory
 
-  - name: install Poetry
-    shell: >
-      curl -sSL https://install.python-poetry.org | python3 -
+  - name: Install python 3.10.4
+    become_user: bench
+    ansible.builtin.shell: source /home/bench/.bashrc && /home/bench/.pyenv/bin/pyenv install 3.10.4
+    args:
+      executable: /bin/bash

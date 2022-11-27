@@ -13,9 +13,8 @@ poetry env use </path-to-your-python-exe>
 poetry install
 poetry shell
 
-vagrant up
+vagrant up --provision
 ```
-
 The virtual Machine has a user Bench that you will use to install the applications.
 Here is how the file system works:
 
@@ -33,6 +32,8 @@ Here is how the file system works:
 ```
 
 Now that everything is ready, we'll install the services for the different configuration we want to test.
+
+
 
 ## Setting up applications
 
