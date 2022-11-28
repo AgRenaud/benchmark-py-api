@@ -5,6 +5,12 @@ In this project you'll find several production like implementation of a simple V
 The project aim to bench several proxy, web-server, application configuration in python.
 
 # Running a Benchmark 
+
+> **Requirements**
+> - [Vagrant](https://www.vagrantup.com/) (With vagrant scp `vagrant plugin install vagrant-scp`)
+> - [Poetry](https://python-poetry.org/) (with [multi-project plugin](https://pypi.org/project/poetry-multiproject-plugin/))
+> - [VirtualBox](https://www.virtualbox.org/)
+
 ## Setting Up VM
 After running the following command, you'll have Virtual machine up for the benchmark.
 The initial VM has 2 CPU cores and 2048 MB of memory

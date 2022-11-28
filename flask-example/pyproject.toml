@@ -4,13 +4,15 @@ version = "0.1.0"
 description = ""
 authors = ["AgRenaud <renaud.aguirrechambilla@gmail.com>"]
 readme = "README.md"
-packages = [{include = "flask_example"}]
+packages = [
+    { include = "flask_example" },
+    { include = "veterinary_clinic", from = "../veterinary-clinic" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 Flask = "^2.2.2"
 SQLAlchemy = "^1.4.41"
-veterinary-clinic = { path = "../veterinary-clinic", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
