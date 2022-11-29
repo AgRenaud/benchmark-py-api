@@ -76,8 +76,7 @@ su -l bench # password: bench
 python --version # Make sure you are using python 3.10.4
 
 python -m venv /opt/venv/<my-experiment-name>
-mkdir /opt/src/<my-experiment-name>
-source /opt/src/<my-experiment-name>/bin/activate
+source /opt/venv/<my-experiment-name>/bin/activate
 pip install /home/bench/<flask-or-fastapi-deps>
 pip install <additional-deps> # gunicorn, uvicorn, etc.
 ```
