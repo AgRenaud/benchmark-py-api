@@ -22,21 +22,21 @@ poetry shell
 vagrant up --provision
 ```
 The virtual Machine has a user Bench that you will use to install the applications.
-Here is how the file system works:
+Here is how the file system will be used:
 
 ```bash
 / #root
 ├─ home/
 │  ├─ bench/ # we will put application wheel here
 ├─ opt/
-│  ├─ src/ # Applications source code & conf file
+│  ├─ src/ # Applications source code & conf file (.wsgi files)
 │  ├─ venv/ # Application's python virtualenv
 ├─ etc/ 
 │  ├─ apache2/ # Apache2 configuration files
 │  ├─ nginx/   # Nginx configuration files
 │  ├─ systemd/ # Service files
 ├─ run/ # Application sockets
-├─ var/ # Application storage
+├─ var/ # Application storage (sqlite)
 ```
 
 Now that everything is ready, we'll install the services for the different configuration we want to test.
@@ -83,11 +83,22 @@ pip install <additional-deps> # gunicorn, uvicorn, etc.
 ```
 
 ### flask-example
-#### `Apache` + `mod_wsgi` 
+#### flask-mod-wsgi (`Apache` + `mod_wsgi`)
 
 First you need to make sure that `mod_wsgi` is installed for the python version of the application (`3.10`).
 
-`sudo apt-get install libapache2-mod-wsgi-py3`
+```sh
+sudo apt-get install apache2-dev
+
+source /opt/venv/flask-mod-wsgi/bin/activate
+pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
+pip install mod_wsgi # activate your python 3.10
+
+sudo /opt/venv/flask-mod-wsgi/bin/mod_wsgi-express install-module | sudo tee /etc/apache2/mods-available/wsgi.load
+
+sudo a2enmod wsgi
+sudo service apache2 restart
+```
 
 Then we'll create a virtual host for the application...
 ```xml
@@ -110,7 +121,7 @@ Then we'll create a virtual host for the application...
 ```
 
 
-You'll notice in the chart below that the server does not need a service manager like `systemd`
+You'll notice in the chart below that the server does not need a service manager like `systemd`.
 `apache2` and `mod_wsgi` manage the WSGI server.
 
 ```mermaid
@@ -132,13 +143,14 @@ flowchart TB
     end
 ```
 
-> Commands:
-> | action | cmd |
-> |--------|-----|
-> |        |     |
-
-#### `Apache` + `gunicorn`
+#### flask-a2 (`Apache` + `gunicorn`)
 For this example, setting up the application will be easier since the WSGI configuration can remains the same for this example and `nginx + gunicorn` example. That's because application is completely decoupled from proxy.
+
+```bash
+source /opt/venv/flask-a2/bin/activate
+pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
+pip install gunicorn
+```
 
 ```mermaid
 flowchart TB
@@ -161,13 +173,14 @@ flowchart TB
     end
 ```
 
-> Commands:
-> | action | cmd |
-> |--------|-----|
-> |        |     |
+#### flask-nginx (`Nginx` + `gunicorn`)
 
-#### `Nginx` + `gunicorn`
- 
+```bash
+source /opt/venv/flask-a2/bin/activate
+pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
+pip install gunicorn
+```
+
 ```mermaid
 flowchart TB
     subgraph VM
@@ -188,14 +201,13 @@ flowchart TB
     end
 ```
 
-> Commands:
-> | action | cmd |
-> |--------|-----|
-> |        |     |
-
 ### fastapi-example
-#### `Apache`  + `gunicorn` + `uvicorn`
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+#### fastapi-a2 (`Apache`  + `gunicorn` + `uvicorn`)
+```bash
+source /opt/venv/flask-a2/bin/activate
+pip install /home/bench/fastapi_example-0.1.0-py3-none-any.whl
+pip install gunicorn
+```
 
 ```mermaid
 flowchart TB
@@ -219,13 +231,12 @@ flowchart TB
     end
 ```
 
-> Commands:
-> | action | cmd |
-> |--------|-----|
-> |        |     |
-
-#### `Nginx`  + `gunicorn` + `uvicorn`
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+#### fastapi-nginx (`Nginx`  + `gunicorn` + `uvicorn`)
+```bash
+source /opt/venv/flask-a2/bin/activate
+pip install /home/bench/fastapi_example-0.1.0-py3-none-any.whl
+pip install gunicorn
+```
 
 ```mermaid
 flowchart TB
@@ -248,9 +259,3 @@ flowchart TB
         end
     end
 ```
-
-
-> Commands:
-> | action | cmd |
-> |--------|-----|
-> |        |     |

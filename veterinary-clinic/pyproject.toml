@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "veterinary_clinic"}]
 
 [tool.poetry.dependencies]
-python = "3.10.4"
+python = "^3.10"
 SQLAlchemy = "^1.4.41"
 
 
