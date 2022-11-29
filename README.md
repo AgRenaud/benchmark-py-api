@@ -175,7 +175,7 @@ flowchart TB
 #### flask-nginx (`Nginx` + `gunicorn`)
 
 ```bash
-source /opt/venv/flask-a2/bin/activate
+source /opt/venv/flask-nginx/bin/activate
 pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
@@ -203,7 +203,7 @@ flowchart TB
 ### fastapi-example
 #### fastapi-a2 (`Apache`  + `gunicorn` + `uvicorn`)
 ```bash
-source /opt/venv/flask-a2/bin/activate
+source /opt/venv/fastapi-a2/bin/activate
 pip install /home/bench/fastapi_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
@@ -232,7 +232,7 @@ flowchart TB
 
 #### fastapi-nginx (`Nginx`  + `gunicorn` + `uvicorn`)
 ```bash
-source /opt/venv/flask-a2/bin/activate
+source /opt/venv/fastapi-nginx/bin/activate
 pip install /home/bench/fastapi_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
