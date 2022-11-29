@@ -26,15 +26,17 @@ Here is how the file system works:
 
 ```bash
 / #root
+├─ home/
+│  ├─ bench/ # we will put application wheel here
 ├─ opt/
-│  ├─ src/ # Applications source code
+│  ├─ src/ # Applications source code & conf file
 │  ├─ venv/ # Application's python virtualenv
-├─ /
-├─ run/ # Application sockets
 ├─ etc/ 
-│  ├─ apache2/ # Application Apache2 configuration files
-│  ├─ nginx/   # Application Nginx configuration files
-│  ├─ systemd/ # Application Service files
+│  ├─ apache2/ # Apache2 configuration files
+│  ├─ nginx/   # Nginx configuration files
+│  ├─ systemd/ # Service files
+├─ run/ # Application sockets
+├─ var/ # Application storage
 ```
 
 Now that everything is ready, we'll install the services for the different configuration we want to test.
@@ -45,6 +47,40 @@ Now that everything is ready, we'll install the services for the different confi
 
 > When needed make sure the required modules are installed for `apache2` :
 > - mod_proxy: `sudo a2enmod proxy`
+
+To start with the installation you'll want to build the archive or `wheel` for the application to test with `poetry build-project` command.
+
+```bash
+cd flask-example && poetry build-project
+cd ..
+cd fastapi-example && poetry build-project
+```
+
+Now we will send the packaged app in our virtual machine and install it.
+
+```bash
+vagrant scp flask-example/dist/flask_example-0.1.0-py3-none-any.whl .
+vagrant scp fastapi-example/dist/fastapi_example-0.1.0-py3-none-any.whl .
+
+vagrant ssh
+sudo mv *.whl /home/bench
+```
+
+Now we've got the minimal files to create all our needed configuration.
+
+For each of the below configurations we will create a python virtualenv and the required configuration files.
+
+```bash
+vagrant ssh
+su -l bench # password: bench
+python --version # Make sure you are using python 3.10.4
+
+python -m venv /opt/venv/<my-experiment-name>
+mkdir /opt/src/<my-experiment-name>
+source /opt/src/<my-experiment-name>/bin/activate
+pip install /home/bench/<flask-or-fastapi-deps>
+pip install <additional-deps> # gunicorn, uvicorn, etc.
+```
 
 ### flask-example
 #### `Apache` + `mod_wsgi` 

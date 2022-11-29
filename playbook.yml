@@ -97,6 +97,6 @@
 
   - name: Install python 3.10.4
     become_user: bench
-    ansible.builtin.shell: source /home/bench/.bashrc && /home/bench/.pyenv/bin/pyenv install 3.10.4
+    ansible.builtin.shell: source /home/bench/.bashrc && PYTHON_CONFIGURE_OPTS="--enable-shared" /home/bench/.pyenv/bin/pyenv install 3.10.4
     args:
       executable: /bin/bash
