@@ -100,10 +100,11 @@ sudo service apache2 restart
 ```
 
 Then we'll create a virtual host for the application...
-```xml
+```apache
+# /etc/apache2/sites-available/flask-mod-wsgi.conf
 <VirtualHost *:80>
 
-    ServerName mod_wsgi.app
+    ServerName flask_mod_wsgi.app
 
     DocumentRoot /usr/local/www/documents
 
@@ -113,11 +114,22 @@ Then we'll create a virtual host for the application...
 
 </VirtualHost>
 ```
+
+Now you can enable it with `sudo a2ensite flask-mod-wsgi`
+
 ...and configure the proxy in order to expose the service outside the VM.
-```xml
+```apache
+# /etc/apache2/sites-available/000-default.conf
+<VirtualHost *:80>
+    # ...
+    
     ProxyPass / https://private_host.com:7443/
     ProxyPassReverse / https://private_host.com:7443/
+    
+    # ...
+<VirtualHost/>
 ```
+And restart apache with `sudo systemctl restart apache2` and everything is ready ! 
 
 
 You'll notice in the chart below that the server does not need a service manager like `systemd`.
