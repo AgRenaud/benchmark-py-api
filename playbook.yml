@@ -6,18 +6,14 @@
 
   tasks:
   
-  - name: Add the group 'bench'
-    ansible.builtin.group:
-      name: bench
-      state: present
-  
   - name: Add the user 'bench' with admin permissions
     ansible.builtin.user:
       name: bench
       comment: Bench user to run benchmark
       password: "{{ 'bench' | password_hash('sha512','A512') }}"
       shell: /bin/bash
-      group: bench
+      groups: sudo
+      append: yes
 
   - name: Update and upgrade apt packages
     become: true
@@ -100,3 +96,15 @@
     ansible.builtin.shell: source /home/bench/.bashrc && PYTHON_CONFIGURE_OPTS="--enable-shared" /home/bench/.pyenv/bin/pyenv install 3.10.4
     args:
       executable: /bin/bash
+
+  - name: Copy files into /home/bench
+    ansible.builtin.copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      mode: "{{item.mode}}"
+      owner: bench
+      group: bench
+    with_items:
+      - { src: './setup.sh', dest: '/home/bench/setup.sh', mode: '0555'}
+      - { src: './flask-example/dist/flask_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}
+      - { src: './fastapi-example/dist/fastapi_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}

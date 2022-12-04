@@ -14,10 +14,17 @@ The project aim to bench several proxy, web-server, application configuration in
 ## Setting Up VM
 After running the following command, you'll have Virtual machine up for the benchmark.
 The initial VM has 2 CPU cores and 2048 MB of memory
+
+To start with the installation you'll want to build the archive or `wheel` for the application to test with `poetry build-project` command.
 ``` 
 poetry env use </path-to-your-python-exe>
 poetry install
 poetry shell
+
+cd flask-example && poetry build-project
+cd ..
+cd fastapi-example && poetry build-project
+cd ..
 
 vagrant up --provision
 ```
@@ -42,30 +49,7 @@ Here is how the file system will be used:
 Now that everything is ready, we'll install the services for the different configuration we want to test.
 
 
-
 ## Setting up applications
-
-> When needed make sure the required modules are installed for `apache2` :
-> - mod_proxy: `sudo a2enmod proxy`
-
-To start with the installation you'll want to build the archive or `wheel` for the application to test with `poetry build-project` command.
-
-```bash
-cd flask-example && poetry build-project
-cd ..
-cd fastapi-example && poetry build-project
-```
-
-Now we will send the packaged app in our virtual machine and install it.
-
-```bash
-vagrant scp flask-example/dist/flask_example-0.1.0-py3-none-any.whl .
-vagrant scp fastapi-example/dist/fastapi_example-0.1.0-py3-none-any.whl .
-
-vagrant ssh
-sudo mv *.whl /home/bench
-```
-
 Now we've got the minimal files to create all our needed configuration.
 
 For each of the below configurations we will create a python virtualenv and the required configuration files.
@@ -75,11 +59,15 @@ vagrant ssh
 su -l bench # password: bench
 python --version # Make sure you are using python 3.10.4
 
+sudo ./setup.sh <my-experiment-name>
 python -m venv /opt/venv/<my-experiment-name>
 source /opt/venv/<my-experiment-name>/bin/activate
-pip install /home/bench/<flask-or-fastapi-deps>
+pip install /home/bench/dist/<flask-or-fastapi-deps>
 pip install <additional-deps> # gunicorn, uvicorn, etc.
 ```
+
+> When needed make sure the required modules are installed for `apache2` :
+> - mod_proxy: `sudo a2enmod proxy`
 
 ### flask-example
 #### flask-mod-wsgi (`Apache` + `mod_wsgi`)
@@ -89,14 +77,29 @@ First you need to make sure that `mod_wsgi` is installed for the python version 
 ```sh
 sudo apt-get install apache2-dev
 
+sudo ./setup.sh flask-mod-wsgi
+python -m venv /opt/venv/flask-mod-wsgi # Make sure you're using python3.10
 source /opt/venv/flask-mod-wsgi/bin/activate
-pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
+pip install /home/bench/dist/flask_example-0.1.0-py3-none-any.whl
 pip install mod_wsgi # activate your python 3.10
 
 sudo /opt/venv/flask-mod-wsgi/bin/mod_wsgi-express install-module | sudo tee /etc/apache2/mods-available/wsgi.load
 
 sudo a2enmod wsgi
 sudo service apache2 restart
+```
+
+Then write a `.wsgi` configuration file :
+
+```
+cd /opt/src/flask-mod-wsgi/
+touch application.wsgi
+```
+```python
+# /opt/src/flask-mod-wsgi/application.wsgi
+from flask_example.client import create_application
+
+application = create_application()
 ```
 
 Then we'll create a virtual host for the application...
@@ -106,11 +109,9 @@ Then we'll create a virtual host for the application...
 
     ServerName flask_mod_wsgi.app
 
-    DocumentRoot /usr/local/www/documents
+    <Directory /opt/src/flask-mod-wsgi>
 
-    <Directory /usr/local/www/documents>
-
-    WSGIScriptAlias /myapp /usr/local/www/wsgi-scripts/myapp.wsgi
+    WSGIScriptAlias /flask_mod_wsgi /opt/src/flask-mod-wsgi/application.wsgi
 
 </VirtualHost>
 ```
@@ -159,7 +160,7 @@ For this example, setting up the application will be easier since the WSGI confi
 
 ```bash
 source /opt/venv/flask-a2/bin/activate
-pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
+pip install /home/bench/dist/flask_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
 
@@ -188,7 +189,7 @@ flowchart TB
 
 ```bash
 source /opt/venv/flask-nginx/bin/activate
-pip install /home/bench/flask_example-0.1.0-py3-none-any.whl
+pip install /home/bench/dist/flask_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
 
@@ -216,7 +217,7 @@ flowchart TB
 #### fastapi-a2 (`Apache`  + `gunicorn` + `uvicorn`)
 ```bash
 source /opt/venv/fastapi-a2/bin/activate
-pip install /home/bench/fastapi_example-0.1.0-py3-none-any.whl
+pip install /home/bench/dist/fastapi_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
 
@@ -245,7 +246,7 @@ flowchart TB
 #### fastapi-nginx (`Nginx`  + `gunicorn` + `uvicorn`)
 ```bash
 source /opt/venv/fastapi-nginx/bin/activate
-pip install /home/bench/fastapi_example-0.1.0-py3-none-any.whl
+pip install /home/bench/dist/fastapi_example-0.1.0-py3-none-any.whl
 pip install gunicorn
 ```
 
