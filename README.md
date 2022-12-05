@@ -106,12 +106,16 @@ Then we'll create a virtual host for the application...
 ```apache
 # /etc/apache2/sites-available/flask-mod-wsgi.conf
 <VirtualHost *:80>
-
     ServerName flask_mod_wsgi.app
 
-    <Directory /opt/src/flask-mod-wsgi>
+    WSGIDaemonProcess flask-mod-wsgi python-home=/opt/venv/flask-mod-wsgi
+    WSGIScriptAlias / /opt/src/flask-mod-wsgi/application.wsgi
 
-    WSGIScriptAlias /flask_mod_wsgi /opt/src/flask-mod-wsgi/application.wsgi
+    <Directory /opt/src/flask-mod-wsgi>
+        WSGIProcessGroup flask-mod-wsgi
+        WSGIApplicationGroup %{GLOBAL}
+        Require all granted
+    </Directory>
 
 </VirtualHost>
 ```
@@ -122,11 +126,11 @@ Now you can enable it with `sudo a2ensite flask-mod-wsgi`
 ```apache
 # /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
-    # ...
-    
-    ProxyPass / https://private_host.com:7443/
-    ProxyPassReverse / https://private_host.com:7443/
-    
+    ...
+
+    ProxyPreserveHost On
+    ProxyPass / flask_mod_wsgi.app
+    ProxyPassReverse / flask_mod_wsgi.app
     # ...
 <VirtualHost/>
 ```
