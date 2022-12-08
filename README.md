@@ -56,14 +56,9 @@ For each of the below configurations we will create a python virtualenv and the 
 
 ```bash
 vagrant ssh
+
 su -l bench # password: bench
 python --version # Make sure you are using python 3.10.4
-
-sudo ./setup.sh <my-experiment-name>
-python -m venv /opt/venv/<my-experiment-name>
-source /opt/venv/<my-experiment-name>/bin/activate
-pip install /home/bench/dist/<flask-or-fastapi-deps>
-pip install <additional-deps> # gunicorn, uvicorn, etc.
 ```
 
 > When needed make sure the required modules are installed for `apache2` :
@@ -83,7 +78,7 @@ source /opt/venv/flask-mod-wsgi/bin/activate
 pip install /home/bench/dist/flask_example-0.1.0-py3-none-any.whl
 pip install mod_wsgi # activate your python 3.10
 
-sudo /opt/venv/flask-mod-wsgi/bin/mod_wsgi-express install-module | sudo tee /etc/apache2/mods-available/wsgi.load
+/opt/venv/flask-mod-wsgi/bin/mod_wsgi-express install-module | sudo tee /etc/apache2/mods-available/wsgi.load
 
 sudo a2enmod wsgi
 sudo service apache2 restart
@@ -127,11 +122,10 @@ Now you can enable it with `sudo a2ensite flask-mod-wsgi`
 # /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
     ...
-
     ProxyPreserveHost On
     ProxyPass / flask_mod_wsgi.app
     ProxyPassReverse / flask_mod_wsgi.app
-    # ...
+    ...
 <VirtualHost/>
 ```
 And restart apache with `sudo systemctl restart apache2` and everything is ready ! 

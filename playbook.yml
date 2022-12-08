@@ -6,14 +6,27 @@
 
   tasks:
   
+  - name: Ensure group "bench" exists
+    ansible.builtin.group:
+      name: bench
+      state: present
+
   - name: Add the user 'bench' with admin permissions
     ansible.builtin.user:
       name: bench
       comment: Bench user to run benchmark
       password: "{{ 'bench' | password_hash('sha512','A512') }}"
       shell: /bin/bash
-      groups: sudo
+      groups: sudo,bench
       append: yes
+
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /opt
+      owner: bench
+      group: sudo
+      mode: '0770'
+      recurse: yes
 
   - name: Update and upgrade apt packages
     become: true
@@ -88,7 +101,7 @@
     file: path=/home/bench/.pyenv
           recurse=yes
           owner=bench
-          group=bench
+          group=sudo
           state=directory
 
   - name: Install python 3.10.4
@@ -103,8 +116,19 @@
       dest: "{{ item.dest }}"
       mode: "{{item.mode}}"
       owner: bench
-      group: bench
+      group: sudo
     with_items:
       - { src: './setup.sh', dest: '/home/bench/setup.sh', mode: '0555'}
       - { src: './flask-example/dist/flask_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}
       - { src: './fastapi-example/dist/fastapi_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}
+
+  - name: Change directory, group and permissions
+    ansible.builtin.file:
+      path: "{{ item.dir }}"
+      state: directory
+      recurse: yes
+      mode: '0755'
+    with_items:
+      - { dir: '/opt/lib'}
+      - { dir: '/opt/bin'}
+      - { dir: '/opt/src'}
