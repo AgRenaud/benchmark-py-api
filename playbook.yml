@@ -74,39 +74,39 @@
   - name: Clone pyenv repo
     git:
       repo: https://github.com/pyenv/pyenv.git
-      dest: "/home/bench/.pyenv"
+      dest: /usr/bin/.pyenv
       version: master
       update: yes
 
   - name: Clone Virtualenv repo
     git:
       repo: https://github.com/pyenv/pyenv-virtualenv.git 
-      dest: /home/bench/.pyenv/plugins/pyenv-virtualenv
+      dest: /usr/bin/.pyenv/plugins/pyenv-virtualenv
       version: master
       update: yes
 
   - name: Add path etc to .bashrc.
     lineinfile:
-      dest: "/home/bench/.bashrc"
+      dest: /home/bench/.bashrc
       state: present
       create: yes
-      line: "{{ item }}"     
+      line: "{{ item }}"
     with_items:
-      - 'export PYENV_ROOT="$HOME/.pyenv"'
+      - 'export PYENV_ROOT="/usr/bin/.pyenv"'
       - 'export PATH="$PYENV_ROOT/bin:$PATH"'
       - 'eval "$(pyenv init -)"'
       - 'eval "$(pyenv virtualenv-init -)"'
 
   - name: Ensure .pyenv permissions are set properly
-    file: path=/home/bench/.pyenv
-          recurse=yes
-          owner=bench
-          group=sudo
-          state=directory
+    ansible.builtin.file: 
+      path: /usr/bin/.pyenv
+      state: directory
+      recurse: yes
+      mode: '0755'
 
   - name: Install python 3.10.4
-    become_user: bench
-    ansible.builtin.shell: source /home/bench/.bashrc && PYTHON_CONFIGURE_OPTS="--enable-shared" /home/bench/.pyenv/bin/pyenv install 3.10.4
+    become: yes
+    ansible.builtin.shell: PYTHON_CONFIGURE_OPTS="--enable-shared" /usr/bin/.pyenv/bin/pyenv install 3.10.4
     args:
       executable: /bin/bash
 
@@ -116,7 +116,7 @@
       dest: "{{ item.dest }}"
       mode: "{{item.mode}}"
       owner: bench
-      group: sudo
+      group: bench
     with_items:
       - { src: './setup.sh', dest: '/home/bench/setup.sh', mode: '0555'}
       - { src: './flask-example/dist/flask_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}
