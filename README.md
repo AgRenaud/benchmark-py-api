@@ -26,7 +26,7 @@ cd ..
 cd fastapi-example && poetry build-project
 cd ..
 
-vagrant up --provision
+vagrant up
 ```
 The virtual Machine has a user Bench that you will use to install the applications.
 Here is how the file system will be used:

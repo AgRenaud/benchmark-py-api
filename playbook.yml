@@ -20,14 +20,6 @@
       groups: sudo,bench
       append: yes
 
-  - name: Change file ownership, group and permissions
-    ansible.builtin.file:
-      path: /opt
-      owner: bench
-      group: sudo
-      mode: '0770'
-      recurse: yes
-
   - name: Update and upgrade apt packages
     become: true
     ansible.builtin.apt:
@@ -45,7 +37,7 @@
     become: true
     ansible.builtin.apt:
       name: nginx
-      state: latest 
+      state: latest
 
   - name: Install pyenv deps
     become: true
@@ -97,16 +89,11 @@
       - 'eval "$(pyenv init -)"'
       - 'eval "$(pyenv virtualenv-init -)"'
 
-  - name: Ensure .pyenv permissions are set properly
-    ansible.builtin.file: 
-      path: /usr/bin/.pyenv
-      state: directory
-      recurse: yes
-      mode: '0755'
-
-  - name: Install python 3.10.4
+  - name: Install python 3.10.4 for all users
     become: yes
-    ansible.builtin.shell: PYTHON_CONFIGURE_OPTS="--enable-shared" /usr/bin/.pyenv/bin/pyenv install 3.10.4
+    ansible.builtin.shell: /usr/bin/.pyenv/plugins/python-build/bin/python-build 3.10.4 /usr/local/
+    environment:
+      PYTHON_CONFIGURE_OPTS: "--enable-shared"
     args:
       executable: /bin/bash
 
@@ -122,13 +109,13 @@
       - { src: './flask-example/dist/flask_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}
       - { src: './fastapi-example/dist/fastapi_example-0.1.0-py3-none-any.whl', dest: '/home/bench/dist/', mode: '0777'}
 
-  - name: Change directory, group and permissions
+  - name: Change directory permissions
     ansible.builtin.file:
       path: "{{ item.dir }}"
       state: directory
       recurse: yes
-      mode: '0755'
+      mode: '0777'
     with_items:
       - { dir: '/opt/lib'}
-      - { dir: '/opt/bin'}
+      - { dir: '/opt/bin/.pyenv'}
       - { dir: '/opt/src'}
