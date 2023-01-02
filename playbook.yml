@@ -77,18 +77,6 @@
       version: master
       update: yes
 
-  - name: Add path etc to .bashrc.
-    lineinfile:
-      dest: /home/bench/.bashrc
-      state: present
-      create: yes
-      line: "{{ item }}"
-    with_items:
-      - 'export PYENV_ROOT="/usr/bin/.pyenv"'
-      - 'export PATH="$PYENV_ROOT/bin:$PATH"'
-      - 'eval "$(pyenv init -)"'
-      - 'eval "$(pyenv virtualenv-init -)"'
-
   - name: Install python 3.10.4 for all users
     become: yes
     ansible.builtin.shell: /usr/bin/.pyenv/plugins/python-build/bin/python-build 3.10.4 /usr/local/
@@ -116,6 +104,7 @@
       recurse: yes
       mode: '0777'
     with_items:
-      - { dir: '/opt/lib'}
-      - { dir: '/opt/bin/.pyenv'}
-      - { dir: '/opt/src'}
+      - { dir: '/opt/lib' }
+      - { dir: '/opt/bin/.pyenv' }
+      - { dir: '/opt/src' }
+      - { dir: '/opt/venv'}

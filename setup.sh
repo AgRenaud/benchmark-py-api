@@ -8,17 +8,12 @@ function setup_filesystem {
     
     printf "[INFO] Make dir /opt/venv/$APP_NAME\n"
     mkdir -p /opt/venv/$APP_NAME
-    
-    printf "[INFO] Make dir /run/$APP_NAME\n"
-    mkdir -p /run/$APP_NAME
-    
-    printf "[INFO] Make dir /var/$APP_NAME\n"
-    mkdir -p /var/$APP_NAME
+
 }
 
 function validation {
     while true; do
-        read -p "Do you wish to install this program? (y/n)" yn
+        read -p "Do you wish to install this program? (y/n) " yn
         case $yn in
             [Yy]* ) break;;
             [Nn]* ) exit;;

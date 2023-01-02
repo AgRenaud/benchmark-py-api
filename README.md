@@ -16,7 +16,7 @@ After running the following command, you'll have Virtual machine up for the benc
 The initial VM has 2 CPU cores and 2048 MB of memory
 
 To start with the installation you'll want to build the archive or `wheel` for the application to test with `poetry build-project` command.
-``` 
+```shell
 poetry env use </path-to-your-python-exe>
 poetry install
 poetry shell
@@ -26,7 +26,7 @@ cd ..
 cd fastapi-example && poetry build-project
 cd ..
 
-vagrant up
+vagrant up # The provision script need the above command to be executed
 ```
 The virtual Machine has a user Bench that you will use to install the applications.
 Here is how the file system will be used:
@@ -36,7 +36,7 @@ Here is how the file system will be used:
 ├─ home/
 │  ├─ bench/ # we will put application wheel here
 ├─ opt/
-│  ├─ src/ # Applications source code & conf file (.wsgi files)
+│  ├─ src/ # Applications config files (.wsgi files)
 │  ├─ venv/ # Application's python virtualenv
 ├─ etc/ 
 │  ├─ apache2/ # Apache2 configuration files
@@ -50,7 +50,7 @@ Now that everything is ready, we'll install the services for the different confi
 
 
 ## Setting up applications
-Now we've got the minimal files to create all our needed configuration.
+Now we've got the minimal files to create all our needed configuration at `/home/bench` in the VM.
 
 For each of the below configurations we will create a python virtualenv and the required configuration files.
 
@@ -72,7 +72,7 @@ First you need to make sure that `mod_wsgi` is installed for the python version 
 ```sh
 sudo apt-get install apache2-dev
 
-sudo ./setup.sh flask-mod-wsgi
+./setup.sh flask-mod-wsgi
 python -m venv /opt/venv/flask-mod-wsgi # Make sure you're using python3.10
 source /opt/venv/flask-mod-wsgi/bin/activate
 pip install /home/bench/dist/flask_example-0.1.0-py3-none-any.whl
@@ -98,17 +98,23 @@ application = create_application()
 ```
 
 Then we'll create a virtual host for the application...
+
+`sudo vim /etc/apache2/sites-available/flask-mod-wsgi.conf`
 ```apache
-# /etc/apache2/sites-available/flask-mod-wsgi.conf
 <VirtualHost *:80>
     ServerName flask_mod_wsgi.app
 
-    WSGIDaemonProcess flask-mod-wsgi python-home=/opt/venv/flask-mod-wsgi
+    WSGIDaemonProcess flask-mod-wsgi\
+        user=bench\
+        group=bench\
+        python-home=/opt/venv/flask-mod-wsgi
+
     WSGIScriptAlias / /opt/src/flask-mod-wsgi/application.wsgi
 
     <Directory /opt/src/flask-mod-wsgi>
         WSGIProcessGroup flask-mod-wsgi
         WSGIApplicationGroup %{GLOBAL}
+        
         Require all granted
     </Directory>
 
@@ -118,8 +124,9 @@ Then we'll create a virtual host for the application...
 Now you can enable it with `sudo a2ensite flask-mod-wsgi`
 
 ...and configure the proxy in order to expose the service outside the VM.
+
+Add the following line to `/etc/apache2/sites-available/000-default.conf`
 ```apache
-# /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
     ...
     ProxyPreserveHost On
