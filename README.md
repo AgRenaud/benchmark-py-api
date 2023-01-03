@@ -42,6 +42,7 @@ Here is how the file system will be used:
 │  ├─ apache2/ # Apache2 configuration files
 │  ├─ nginx/   # Nginx configuration files
 │  ├─ systemd/ # Service files
+│  ├─ hosts # DNS configuration
 ├─ run/ # Application sockets
 ├─ var/ # Application storage (sqlite)
 ```
@@ -78,7 +79,7 @@ source /opt/venv/flask-mod-wsgi/bin/activate
 pip install /home/bench/dist/flask_example-0.1.0-py3-none-any.whl
 pip install mod_wsgi # activate your python 3.10
 
-/opt/venv/flask-mod-wsgi/bin/mod_wsgi-express install-module | sudo tee /etc/apache2/mods-available/wsgi.load
+sudo /opt/venv/flask-mod-wsgi/bin/mod_wsgi-express install-module | sudo tee /etc/apache2/mods-available/wsgi.load
 
 sudo a2enmod wsgi
 sudo service apache2 restart
@@ -102,7 +103,7 @@ Then we'll create a virtual host for the application...
 `sudo vim /etc/apache2/sites-available/flask-mod-wsgi.conf`
 ```apache
 <VirtualHost *:80>
-    ServerName flask_mod_wsgi.app
+    ServerName flask-mod-wsgi.app
 
     WSGIDaemonProcess flask-mod-wsgi\
         user=bench\
@@ -121,7 +122,7 @@ Then we'll create a virtual host for the application...
 </VirtualHost>
 ```
 
-Now you can enable it with `sudo a2ensite flask-mod-wsgi`
+Now you can enable it with `sudo a2ensite flask-mod-wsgi.app`
 
 ...and configure the proxy in order to expose the service outside the VM.
 
@@ -130,12 +131,12 @@ Add the following line to `/etc/apache2/sites-available/000-default.conf`
 <VirtualHost *:80>
     ...
     ProxyPreserveHost On
-    ProxyPass / flask_mod_wsgi.app
-    ProxyPassReverse / flask_mod_wsgi.app
+    ProxyPass        "/bench" "http://flask-mod-wsgi.app/"
+    ProxyPassReverse "/bench" "http://flask-mod-wsgi.app/"
     ...
 <VirtualHost/>
 ```
-And restart apache with `sudo systemctl restart apache2` and everything is ready ! 
+And restart apache with `sudo systemctl restart apache2` and everything is ready !
 
 
 You'll notice in the chart below that the server does not need a service manager like `systemd`.
