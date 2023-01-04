@@ -50,6 +50,27 @@ Here is how the file system will be used:
 Now that everything is ready, we'll install the services for the different configuration we want to test.
 
 
+## Run a load test
+To run the load test we will use `locust`. The application is already added in the `poetry` config at the root of this project. You just have to activate `poetry` environment with `poetry shell` to use it. 
+
+Once an application is installed it will be reachable at http://192.168.56.15/bench
+
+> You can test an installation with `curl http://192.168.56.15/bench/health`
+
+All the locust scripts are located in `benchmark/`, you can change the configuration for the benchmark in `locust.conf`.
+
+When everything is set up you only have to run the following commands
+
+```shell
+poetry shell
+locust
+```
+
+Then go to http://0.0.0.0:8089/ to run the test and watch results.
+
+![](./doc/locust-homepage.png)
+
+
 ## Setting up applications
 Now we've got the minimal files to create all our needed configuration at `/home/bench` in the VM.
 
