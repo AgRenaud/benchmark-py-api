@@ -14,6 +14,11 @@ router = APIRouter()
 def create_uid() -> str:
     return str(uuid.uuid4())
 
+@router.get('/health')
+def healthcheck():
+    return {
+        "status": "up"
+    }
 
 @router.post('/pets/')
 def add_pet(pet: schema.Pet, service: VeterinaryClinic=Depends(clinic_service)):

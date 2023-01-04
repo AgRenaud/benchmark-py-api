@@ -10,3 +10,5 @@ benchmark/benchmark-requests.txt
 .local/
 .pyenv/
 poetry-installer-error-*.log
+*.whl
+dist/

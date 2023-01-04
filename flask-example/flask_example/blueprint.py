@@ -23,10 +23,15 @@ class  ClinicController:
         self.__init_enpoints__()
 
     def __init_enpoints__(self):
+        self.blueprint.add_url_rule('/health', 'health', self.healthcheck, methods=['GET'])
         self.blueprint.add_url_rule('/pets/', 'pets', self.add_pet, methods=['POST'])
         self.blueprint.add_url_rule('/pets/<pet_id>/appointments', 'appointments', self.add_appointment, methods=['POST'])
         self.blueprint.add_url_rule('/pets/<pet_id>/appointments/<appointment_id>/report', 'report', self.download_report, methods=['GET'])
 
+    def healthcheck(self):
+        return {
+            "status": "up"
+        }
 
     def add_pet(self):
         request_data = request.json
@@ -35,7 +40,10 @@ class  ClinicController:
         uid = create_uid()
         new_pet = Pet(uid, pet.name, pet.type)
         self.service.add_pet(new_pet)
-        return {"msg": f"You're pet has been added to the database with id: {uid}"}
+        return {
+            "id": uid,
+            "msg": f"You're pet has been added to the database with id: {uid}"
+        }
 
     def add_appointment(self, pet_id: str):
         request_data = request.json
