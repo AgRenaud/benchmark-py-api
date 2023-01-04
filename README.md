@@ -170,20 +170,19 @@ You'll notice in the chart below that the server does not need a service manager
 
 ```mermaid
 flowchart TB
-
     subgraph VM
         Proxy["Proxy (Apache2)"] --> VirtualHost["VirtualHost (Apache2)"]
         VirtualHost --> WSGIServer["WSGI Server (mod_wsgi)"]
         WSGIServer --> |call| Application["Application"]
 
-    subgraph Web server
-        Proxy
-        VirtualHost
-    end
-    subgraph Application server
-        WSGIServer
-        Application
-    end
+        subgraph Web server
+            Proxy
+            VirtualHost
+        end
+        subgraph Application server
+            WSGIServer
+            Application
+        end
     end
 ```
 
@@ -203,17 +202,16 @@ flowchart TB
         WSGIServer["WSGI Server (Gunicorn)"] --> |listen| Socket
         WSGIServer --> |call| Application
 
-    ServiceManager["systemd"] -.-> |manage| WSGIServer
+        ServiceManager["systemd"] -.-> |manage| WSGIServer
 
-    subgraph Web server
-        Proxy
-    end
+        subgraph Web server
+            Proxy
+        end
 
-    subgraph Application server
-        WSGIServer
-        Application
-    end
-
+        subgraph Application server
+            WSGIServer
+            Application
+        end
     end
 ```
 
