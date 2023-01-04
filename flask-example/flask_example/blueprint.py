@@ -40,7 +40,10 @@ class  ClinicController:
         uid = create_uid()
         new_pet = Pet(uid, pet.name, pet.type)
         self.service.add_pet(new_pet)
-        return {"msg": f"You're pet has been added to the database with id: {uid}"}
+        return {
+            "id": uid,
+            "msg": f"You're pet has been added to the database with id: {uid}"
+        }
 
     def add_appointment(self, pet_id: str):
         request_data = request.json

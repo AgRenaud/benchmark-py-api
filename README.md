@@ -63,7 +63,7 @@ python --version # Make sure you are using python 3.10.4
 ```
 
 > When needed make sure the required modules are installed for `apache2` :
-> - mod_proxy: `sudo a2enmod proxy`
+> - mod_proxy: `sudo a2enmod proxy proxy_http`
 
 ### flask-example
 #### flask-mod-wsgi (`Apache` + `mod_wsgi`)
@@ -136,6 +136,11 @@ Add the following line to `/etc/apache2/sites-available/000-default.conf`
     ...
 <VirtualHost/>
 ```
+and add this line to `/etc/hosts`
+```
+127.0.0.1   flask-mod-wsgi.app
+```
+
 And restart apache with `sudo systemctl restart apache2` and everything is ready !
 
 
